@@ -10,6 +10,9 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm 
 from torchvision.utils import save_image 
 
+
+torch.cuda.empty_cache()
+
 def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler):
     loop = tqdm(loader, leave=True)
 
@@ -24,7 +27,7 @@ def train_fn(disc, gen, loader, opt_disc, opt_gen, l1, bce, g_scaler, d_scaler):
             D_fake_loss = bce(D_fake, torch.zeros_like(D_fake)) 
             D_loss = (D_real_loss + D_fake_loss) / 2 
         
-        disc.zer_grad()
+        disc.zero_grad()
         d_scaler.scale(D_loss).backward()
         d_scaler.step(opt_disc)
         d_scaler.update()
@@ -59,15 +62,15 @@ def main():
         load_checkpoint(config.CHECKPOINT_GEN, gen, opt_gen, config.LEARNING_RATE)
         load_checkpoint(config.CHECKPOINT_DISC, disc, opt_disc, config.LEARNING_RATE)
 
-    train_dataset = RainDataset(root_dir="dataset\train")
+    train_dataset = RainDataset(root_dir="dataset\_train")
     train_loader = DataLoader(train_dataset, batch_size=config.BATCH_SIZE, shuffle=True, num_workers=config.NUM_WORKERS)
     g_scaler = torch.cuda.amp.GradScaler()
     d_scaler = torch.cuda.amp.GradScaler()
 
-    test_dataset = RainDataset(root_dir="dataset\test")
+    test_dataset = RainDataset(root_dir="dataset\_test")
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
     
-    for epoch in config.NUM_EPOCHS:
+    for epoch in range(config.NUM_EPOCHS):
         train_fn(disc, gen, train_loader, opt_disc, opt_gen, L1_LOSS, BCE, g_scaler, d_scaler)
 
         if config.SAVE_MODEL and epoch % 5 == 0:
