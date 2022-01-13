@@ -24,7 +24,6 @@ class Discriminator(nn.Module):
                       stride=2, padding=1, padding_mode="reflect"),
             nn.LeakyReLU(0.2),
         )
-
         layers = []
         in_channels = features[0]
         for feature in features[1:]:
@@ -33,9 +32,7 @@ class Discriminator(nn.Module):
                 CNNBlock(in_channels, feature,
                          stride=1 if feature == features[-1] else 2),
             )
-
             in_channels = feature
-
         layers.append(
             nn.Conv2d(in_channels, 1, kernel_size=4, stride=1,
                       padding=1, padding_mode="reflect")
