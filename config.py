@@ -28,3 +28,11 @@ transform_only_input = A.Compose(
         ToTensorV2()
     ]
 )
+
+
+transform_only_mask = A.Compose(
+    [
+        A.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5], max_pixel_value=255.0,),
+        ToTensorV2(),
+    ]
+)
